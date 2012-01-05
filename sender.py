@@ -7,9 +7,8 @@ import sys
 # Twisted
 from twisted.python import log
 from twisted.internet import reactor
+from twisted.internet.defer import DeferredSemaphore
 from twisted.internet.endpoints import clientFromString
-from twisted.internet.threads import deferToThreadPool
-from twisted.python.threadpool import ThreadPool
 from twisted.internet import task
 
 # VOEvent transport protocol
@@ -39,16 +38,14 @@ def send_message(endpoint, dispatcher):
         # And when the connection is ready, use it to send a message
         d.addCallback(lambda p: p.sendString(outgoing_message.to_string()))
 
-    deferToThreadPool(reactor, dispatcher, do_send)
+    dispatcher.run(do_send)
 
 if __name__ == "__main__":
     log.startLogging(sys.stdout)
     endpoint = clientFromString(reactor, CONNECT_TO)
-    dispatcher = ThreadPool(minthreads=MAX_CONNECT, maxthreads=MAX_CONNECT)
-    reactor.addSystemEventTrigger("before", "shutdown", dispatcher.stop)
-    reactor.callWhenRunning(dispatcher.start)
-    l = task.LoopingCall(send_message, endpoint, dispatcher)
-    dispatcher.loop = l
+    dispatcher = DeferredSemaphore(MAX_CONNECT)
+    dispatcher.loop = task.LoopingCall(send_message, endpoint, dispatcher)
     dispatcher.ctr = 1
-    l.start(float(PERIOD)/N_OF_EVENTS)
+    dispatcher.loop.start(float(PERIOD)/N_OF_EVENTS)
+
     reactor.run()
