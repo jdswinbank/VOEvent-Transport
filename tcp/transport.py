@@ -94,7 +94,7 @@ class VOEventSender(Int32StringReceiver):
         else:
             log.err("Incomprehensible data received")
 
-        # After receiving an event, we shut down the connection.
+        # After receiving a message, we shut down the connection.
         self.transport.loseConnection()
 
 class VOEventSenderFactory(Factory):

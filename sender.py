@@ -3,12 +3,14 @@
 
 # Python standard library
 import sys
-from numpy import random
 
 # Twisted
 from twisted.python import log
 from twisted.internet import reactor
 from twisted.internet.endpoints import clientFromString
+from twisted.internet.threads import deferToThreadPool
+from twisted.python.threadpool import ThreadPool
+from twisted.internet import task
 
 # VOEvent transport protocol
 from tcp.transport import VOEventSenderFactory
@@ -21,27 +23,32 @@ from config import LOCAL_IVO
 from config import CONNECT_TO
 from config import N_OF_EVENTS
 from config import PERIOD
+from config import MAX_CONNECT
 
-def send_message(endpoint):
-    # Set up a factory connected to the relevant endpoint
-    d = endpoint.connect(VOEventSenderFactory())
+def send_message(endpoint, dispatcher):
+    outgoing_message = VOEventMessage(LOCAL_IVO)
+    if dispatcher.ctr == N_OF_EVENTS:
+        dispatcher.loop.stop()
+    else:
+        dispatcher.ctr += 1
 
-    # And when the connection is ready, use it to send a message
-    d.addCallback(lambda p: p.sendString(VOEventMessage(LOCAL_IVO).to_string()))
+    def do_send():
+        # Set up a factory connected to the relevant endpoint
+        d = endpoint.connect(VOEventSenderFactory())
 
-def schedule_messages(endpoint):
-    event_times = random.uniform(0, PERIOD, N_OF_EVENTS)
+        # And when the connection is ready, use it to send a message
+        d.addCallback(lambda p: p.sendString(outgoing_message.to_string()))
 
-    for event_time in event_times:
-        reactor.callLater(event_time, send_message, endpoint)
+    deferToThreadPool(reactor, dispatcher, do_send)
 
 if __name__ == "__main__":
     log.startLogging(sys.stdout)
-    #endpoint = TCP4ClientEndpoint(reactor, "localhost", 8099)
     endpoint = clientFromString(reactor, CONNECT_TO)
-#    reactor.callLater(1, send_message, endpoint)
-#    reactor.callLater(2, send_message, endpoint)
-#    for i in range(2000):
-#        send_message(endpoint)
-    schedule_messages(endpoint)
+    dispatcher = ThreadPool(minthreads=MAX_CONNECT, maxthreads=MAX_CONNECT)
+    reactor.addSystemEventTrigger("before", "shutdown", dispatcher.stop)
+    reactor.callWhenRunning(dispatcher.start)
+    l = task.LoopingCall(send_message, endpoint, dispatcher)
+    dispatcher.loop = l
+    dispatcher.ctr = 1
+    l.start(float(PERIOD)/N_OF_EVENTS)
     reactor.run()
