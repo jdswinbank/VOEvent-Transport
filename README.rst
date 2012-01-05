@@ -56,12 +56,12 @@ Use ``ctrl+c`` to exit.
 Benchmarking
 ============
 
-The `LSST <http://www.lsst.org/>` will produce up to 2,000,000 VOEvents per
+The `LSST <http://www.lsst.org/>`_ will produce up to 2,000,000 VOEvents per
 night. It is at the end of a high-latency internet connection. Is the existing
 VOEvent Transport Protocol suitable?
 
 This code was installed on two (virtual) machines (hosted on `VirtualBox 4.1.6
-<http://www.virtualbox.org/>`) running Debian Testing. NTP was used to
+<http://www.virtualbox.org/>`_) running Debian Testing. NTP was used to
 synchronise the clocks on the machines (this is not a perfect technique -- to
 be investigated is proper syncing to the host clock using VirtualBox).
 Artificial network latency is introduced using ``tc``::
