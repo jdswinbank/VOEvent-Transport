@@ -38,6 +38,9 @@ def send_message(endpoint, dispatcher):
         # And when the connection is ready, use it to send a message
         d.addCallback(lambda p: p.sendString(outgoing_message.to_string()))
 
+        # The semaphore releases when the returned Deferred fires
+        return d
+
     dispatcher.run(do_send)
 
 if __name__ == "__main__":
