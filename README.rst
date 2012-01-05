@@ -15,10 +15,10 @@ Requirements
 - `Twisted <http://twistedmatrix.com/trac/>`_ 11.0 or greater.
 
 Usage
-=====
+-----
 
 Sender
-------
+======
 
 The sender connects to a remote host and sends a number of (simulated;
 containing no scientific payload) VOEvent packets according to the TCP
@@ -36,7 +36,7 @@ Usage::
 Use ``ctrl+c`` to exit.
 
 Receiver
---------
+========
 
 The receiver listens for VOEvent packets and keeps basic statistics about the
 latency (defined as the difference between the time at which the packet is
@@ -54,7 +54,7 @@ Usage::
 Use ``ctrl+c`` to exit.
 
 Benchmarking
-============
+------------
 
 The `LSST <http://www.lsst.org/>`_ will produce up to 2,000,000 VOEvents per
 night. It is at the end of a high-latency internet connection. Is the existing
