@@ -89,7 +89,8 @@ Over 30 seconds, 55 events have been received, but nearly 1400 (46.3 * 30)
 have been generated; note that the maximum and average latencies are
 increasing rapidly.
 
-Allowing for 30 simultaneous connections mitigates the problem::
+Allowing for 30 simultaneous connections (ie, setting ``MAX_CONNECT = 30`` in
+``config.py``) mitigates the problem::
 
   2012-01-05 15:50:04+0000 [-] Received 0 events
   2012-01-05 15:50:09+0000 [-] Received 114 events; Latency 0.735258/0.742203/0.736949s (min/max/avg)
