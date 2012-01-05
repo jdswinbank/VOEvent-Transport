@@ -66,7 +66,7 @@ synchronise the clocks on the machines (this is not a perfect technique -- to
 be investigated is proper syncing to the host clock using VirtualBox).
 Artificial network latency is introduced using ``tc``::
 
-  $ sudo tc qdisc replace dev eth1 root netem delay 250ms
+  $ sudo tc qdisc add dev eth1 root netem delay 250ms
 
 Note that ``tc`` adds latency to *outgoing* packets, but not to incoming
 packets. Hence this command must be run on *both* machines.
