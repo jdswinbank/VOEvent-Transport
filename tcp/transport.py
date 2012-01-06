@@ -25,7 +25,9 @@ class VOEventReceiver(Int32StringReceiver):
     the payload data. Twisted's Int32StringReceiver handles this for us
     automatically.
 
-    When a VOEvent is received, we broadcast it onto a ZeroMQ PUB socket.
+    When a VOEvent is received, we acknowledge it, shut down the connection,
+    and call VOEventReceiver.voEventHandler() to process it. That method
+    should be supplied in a subclass.
     """
     def stringReceived(self, data):
         """
