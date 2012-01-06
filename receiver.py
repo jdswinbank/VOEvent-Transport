@@ -1,4 +1,4 @@
-h VOEvent receiver.
+# VOEvent receiver.
 # John Swinbank, <swinbank@transientskp.org>, 2011-12.
 
 # Python standard library
