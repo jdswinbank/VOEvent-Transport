@@ -28,11 +28,11 @@ class EventIndex(object):
 
     def receive_event(self, timestring):
         timestamp = datetime.datetime.strptime(timestring, "%Y-%m-%dT%H:%M:%S.%f")
-        if not hasattr(self, "earliest") or timestamp < self.earliest:
-            self.earliest = timestamp
-        if not hasattr(self, "latest") or timestamp > self.latest:
-            self.latest = timestamp
         received_time = datetime.datetime.utcnow()
+        if not hasattr(self, "earliest") or timestamp < self.earliest:
+            self.earliest = received_time
+        if not hasattr(self, "latest") or timestamp > self.latest:
+            self.latest = received_time
         self.latencies.append((received_time - timestamp).total_seconds())
 
     def print_status(self):
